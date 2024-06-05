@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+<script>
+  window.TrackJS && TrackJS.install({
+    token: "c2d3821e36d84201b8f8b0f9c9ebd933"
+    // for more configuration options, see https://docs.trackjs.com
+  });
+
+  window.onerror = function (event, source, lineno, colno, error) {
+    console.log('trigger a global error button');
+    TrackJS.track(error);
+    return true;
+  };
+</script>
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -69,21 +83,21 @@
     </form>
 
     <section id="error-btns">
-      <button>Console Log</button>
-      <button>Console Error</button>
-      <button>Console Count</button>
-      <button>Console Warn</button>
-      <button>Console Assert</button>
-      <button>Console Clear</button>
-      <button>Console Dir</button>
-      <button>Console dirxml</button>
-      <button>Console Group Start</button>
-      <button>Console Group End</button>
-      <button>Console Table</button>
-      <button>Start Timer</button>
-      <button>End Timer</button>
-      <button>Console Trace</button>
-      <button>Trigger a Global Error</button>
+      <button onclick="console.log('console log button')">Console Log</button>
+      <button onclick="console.error('console error button')">Console Error</button>
+      <button onclick="console.count('console count button')">Console Count</button>
+      <button onclick="console.warn('console warn button')">Console Warn</button>
+      <button onclick="console.assert(1==2, 'console assert button')">Console Assert</button>
+      <button onclick="console.clear('console clear button')">Console Clear</button>
+      <button onclick="console.dir(this)">Console Dir</button>
+      <button onclick="console.dirxml(this)">Console dirxml</button>
+      <button onclick="console.group('console group button')">Console Group Start</button>
+      <button onclick="console.groupEnd('console group end button')">Console Group End</button>
+      <button onclick="console.table(['console', 'table', 'button'])">Console Table</button>
+      <button onclick="console.time('console timer button')">Start Timer</button>
+      <button onclick="console.timeEnd('console timer button')">End Timer</button>
+      <button onclick="deep()">Console Trace</button>
+      <button onclick="causeError()">Trigger a Global Error</button>
     </section>
   </main>
 
@@ -95,13 +109,47 @@
       let firstNum = document.querySelector('#first-num').value;
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      try {
+        if (operator == '/' && secondNum == 0) {
+          throw new divideZeroError('cannot divide by zero');
+        }
+        else {
+          output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+        }
+      } catch (err) {
+        console.error(err.name);
+      } finally {
+        console.log('potential calculation error handled');
+      }
     });
 
-    let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
+    // let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
     // Start your code here
     // You may move this JS to another file if you wish
+
+    class divideZeroError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "divideZeroError";
+      }
+    }
+
+    function deep() {
+      deeper();
+    }
+
+    function deeper() {
+      deepest();
+    }
+
+    function deepest() {
+      console.trace();
+    }
+
+    function causeError() {
+      return x;
+    }
   </script>
 </body>
 
